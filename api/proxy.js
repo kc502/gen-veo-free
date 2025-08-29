@@ -1,36 +1,31 @@
-// api/proxy.js
 export default async function handler(req, res) {
-  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
   try {
-    const { apiKey, model, prompt, negativePrompt, aspectRatio, personGeneration } = req.body;
+    const { apiKey, body } = req.body;
 
-    if (!apiKey) return res.status(400).json({ error: 'Missing API key' });
+    if (!apiKey) {
+      return res.status(400).json({ error: "API key missing" });
+    }
 
-    const startResp = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:predictLongRunning`,
+    const response = await fetch(
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-pro-001:predictLongRunning",
       {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'x-goog-api-key': apiKey
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`
         },
-        body: JSON.stringify({
-          instances: [{ prompt }],
-          parameters: {
-            aspectRatio,
-            ...(negativePrompt ? { negativePrompt } : {}),
-            ...(personGeneration ? { personGeneration } : {})
-          }
-        })
+        body: JSON.stringify(body)
       }
     );
 
-    const op = await startResp.json();
-    res.status(200).json(op);
+    const data = await response.json();
+    return res.status(response.status).json(data);
 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err.message });
   }
 }
