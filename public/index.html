@@ -1,122 +1,30 @@
 <!DOCTYPE html>
-<html lang="my">
+<html>
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Veo 3 Video Generator (Proxy Version)</title>
-  <style>
-    :root { --bg:#0b1020; --card:#121933; --ink:#e6ecff; --muted:#9fb0ff40; }
-    *{box-sizing:border-box}
-    body{margin:0; font-family:sans-serif; background:#0b1020; color:var(--ink)}
-    header{padding:24px 16px; text-align:center; border-bottom:1px solid #1f2a55}
-    h1{margin:0 0 6px; font-size:22px}
-    main{max-width:960px; margin:24px auto; padding:0 16px 40px}
-    .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:16px}
-    @media (max-width:900px){.grid{grid-template-columns:1fr}}
-    .card{background:var(--card); border:1px solid #1b2550; border-radius:16px; padding:16px}
-    label{display:block; font-size:13px; margin-bottom:6px}
-    input,select,textarea{width:100%; background:#0f1738; color:var(--ink); border:1px solid #2a3977; border-radius:10px; padding:10px 12px; font-size:14px}
-    textarea{min-height:120px}
-    .btn{background:#5b7cff; border:0; padding:10px 14px; color:white; border-radius:12px; font-weight:600; cursor:pointer}
-    .btn:disabled{opacity:.5}
-    .log{height:160px; overflow:auto; background:#0e1430; border:1px dashed #355; border-radius:12px; padding:10px; font-family:monospace; white-space:pre-wrap}
-    video{width:100%; border-radius:16px; border:1px solid #203067; background:#000}
-  </style>
+  <meta charset="UTF-8">
+  <title>Proxy Test</title>
 </head>
 <body>
-  <header>
-    <h1>Veo 3 (Gemini API via Proxy)</h1>
-    <div class="muted">Your API key is sent via proxy server, not direct to Google API</div>
-  </header>
-  <main class="grid">
-    <section class="card">
-      <label for="model">Model</label>
-      <select id="model">
-        <option value="veo-3.0-generate-preview">veo-3.0-generate-preview</option>
-        <option value="veo-3.0-fast-generate-preview">veo-3.0-fast-generate-preview</option>
-        <option value="veo-2.0-generate">veo-2.0-generate (silent)</option>
-      </select>
-
-      <label for="aspect">Aspect</label>
-      <select id="aspect">
-        <option value="16:9">16:9</option>
-        <option value="9:16">9:16</option>
-      </select>
-
-      <label for="persons">Persons</label>
-      <select id="persons">
-        <option value="allow_all">allow_all</option>
-        <option value="allow_adult">allow_adult</option>
-        <option value="dont_allow">dont_allow</option>
-      </select>
-
-      <label for="prompt">Prompt</label>
-      <textarea id="prompt"></textarea>
-
-      <label for="neg">Negative prompt</label>
-      <input id="neg" type="text" />
-
-      <label for="key">Gemini API Key</label>
-      <input id="key" type="password" placeholder="Paste your Gemini API Key" />
-
-      <button id="go" class="btn">▶ Generate Video</button>
-
-      <h3>Activity</h3>
-      <div id="log" class="log"></div>
-    </section>
-
-    <section class="card">
-      <h3>Result</h3>
-      <video id="player" controls playsinline></video>
-      <a id="download" class="btn" href="#" download="veo-output.mp4" style="display:none">⬇ Download</a>
-    </section>
-  </main>
+  <h1>Gemini Proxy Test</h1>
+  <button id="btn">Test Proxy</button>
+  <pre id="output"></pre>
 
   <script>
-    const log = (m)=>{ const l=document.getElementById('log'); l.textContent += (m+"\n"); l.scrollTop=l.scrollHeight; };
-
-    document.getElementById('go').addEventListener('click', async ()=>{
-      const apiKey = document.getElementById('key').value.trim();
-      const prompt = document.getElementById('prompt').value.trim();
-      const negativePrompt = document.getElementById('neg').value.trim();
-      const aspectRatio = document.getElementById('aspect').value;
-      const personGeneration = document.getElementById('persons').value;
-      const model = document.getElementById('model').value;
-
-      if(!apiKey || !prompt){ alert("Please enter API key and prompt"); return; }
-
-      log("Submitting job via proxy…");
-
-      try {
-        const res = await fetch("/api/proxy", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            apiKey,
-            model,
-            prompt,
-            negativePrompt,
-            aspectRatio,
-            personGeneration
-          })
-        });
-
-        if(!res.ok) throw new Error("Proxy failed " + res.status);
-        const data = await res.json();
-
-        if(data.videoUrl){
-          const player=document.getElementById('player');
-          player.src=data.videoUrl; player.load(); player.play();
-          const dl=document.getElementById('download');
-          dl.href=data.videoUrl; dl.style.display="inline-block";
-          log("✅ Done. Video ready.");
-        } else {
-          log("❌ No video URL returned");
-        }
-
-      } catch(err){
-        log("❌ " + err.message);
-      }
+    document.getElementById("btn").addEventListener("click", async () => {
+      const res = await fetch("/api/proxy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          apiKey: "YOUR_API_KEY",
+          body: {
+            contents: [
+              { role: "user", parts: [{ text: "Hello from browser!" }] }
+            ]
+          }
+        })
+      });
+      const data = await res.json();
+      document.getElementById("output").textContent = JSON.stringify(data, null, 2);
     });
   </script>
 </body>
