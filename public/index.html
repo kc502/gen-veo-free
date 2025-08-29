@@ -1,171 +1,123 @@
 <!DOCTYPE html>
 <html lang="my">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Gen Veo</title>
-<style>
-:root { --bg:#0b1020; --card:#121933; --ink:#e6ecff; --muted:#9fb0ff40; }
-*{box-sizing:border-box}
-body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;background:linear-gradient(180deg,#0b1020,#0b1020 40%,#0e1630);color:var(--ink)}
-header{padding:24px 16px;text-align:center;border-bottom:1px solid #1f2a55}
-h1{margin:0 0 6px;font-size:22px}
-main{max-width:960px;margin:24px auto;padding:0 16px 40px}
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px}
-@media(max-width:900px){.grid{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid #1b2550;border-radius:16px;padding:16px;box-shadow:0 10px 30px #0005}
-label{display:block;font-size:13px;opacity:.9;margin-bottom:6px}
-input[type="text"],input[type="password"],select,textarea{width:100%;background:#0f1738;color:var(--ink);border:1px solid #2a3977;border-radius:10px;padding:10px 12px;font-size:14px}
-textarea{min-height:120px;resize:vertical}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn{display:inline-flex;align-items:center;gap:8px;background:#5b7cff;border:0;padding:10px 14px;color:white;border-radius:12px;font-weight:600;cursor:pointer}
-.btn:disabled{opacity:.5;cursor:not-allowed}
-.muted{font-size:12px;color:#cdd7ffb3}
-.log{height:160px;overflow:auto;background:#0e1430;border:1px dashed #355;border-radius:12px;padding:10px;font-family:ui-monospace,Consolas,monospace;white-space:pre-wrap}
-video{width:100%;border-radius:16px;border:1px solid #203067;background:#000}
-.k{display:flex;align-items:center;gap:8px;margin:6px 0 10px}
-.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:4px 8px;border:1px solid #2a3977;border-radius:999px;background:#0b1230}
-.danger{color:#ffbdbd}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Veo 3 Video Generator (Proxy Version)</title>
+  <style>
+    :root { --bg:#0b1020; --card:#121933; --ink:#e6ecff; --muted:#9fb0ff40; }
+    *{box-sizing:border-box}
+    body{margin:0; font-family:sans-serif; background:#0b1020; color:var(--ink)}
+    header{padding:24px 16px; text-align:center; border-bottom:1px solid #1f2a55}
+    h1{margin:0 0 6px; font-size:22px}
+    main{max-width:960px; margin:24px auto; padding:0 16px 40px}
+    .grid{display:grid; grid-template-columns:1.1fr .9fr; gap:16px}
+    @media (max-width:900px){.grid{grid-template-columns:1fr}}
+    .card{background:var(--card); border:1px solid #1b2550; border-radius:16px; padding:16px}
+    label{display:block; font-size:13px; margin-bottom:6px}
+    input,select,textarea{width:100%; background:#0f1738; color:var(--ink); border:1px solid #2a3977; border-radius:10px; padding:10px 12px; font-size:14px}
+    textarea{min-height:120px}
+    .btn{background:#5b7cff; border:0; padding:10px 14px; color:white; border-radius:12px; font-weight:600; cursor:pointer}
+    .btn:disabled{opacity:.5}
+    .log{height:160px; overflow:auto; background:#0e1430; border:1px dashed #355; border-radius:12px; padding:10px; font-family:monospace; white-space:pre-wrap}
+    video{width:100%; border-radius:16px; border:1px solid #203067; background:#000}
+  </style>
 </head>
 <body>
-<header>
-<h1>Gen Veo</h1>
-<div class="muted">Paste your own API key</div>
-</header>
+  <header>
+    <h1>Veo 3 (Gemini API via Proxy)</h1>
+    <div class="muted">Your API key is sent via proxy server, not direct to Google API</div>
+  </header>
+  <main class="grid">
+    <section class="card">
+      <label for="model">Model</label>
+      <select id="model">
+        <option value="veo-3.0-generate-preview">veo-3.0-generate-preview</option>
+        <option value="veo-3.0-fast-generate-preview">veo-3.0-fast-generate-preview</option>
+        <option value="veo-2.0-generate">veo-2.0-generate (silent)</option>
+      </select>
 
-<main class="grid">
-<section class="card">
-<div class="k">
-<span class="pill">Model
-<select id="model">
-<option value="veo-3.0-generate-preview">veo-3.0-generate-preview</option>
-<option value="veo-3.0-fast-generate-preview">veo-3.0-fast-generate-preview</option>
-<option value="veo-2.0-generate">veo-2.0-generate (silent)</option>
-</select>
-</span>
-<span class="pill">Aspect
-<select id="aspect">
-<option value="16:9">16:9 (landscape)</option>
-<option value="9:16">9:16 (portrait)</option>
-</select>
-</span>
-<span class="pill">Persons
-<select id="persons">
-<option value="allow_all">allow_all</option>
-<option value="allow_adult">allow_adult</option>
-<option value="dont_allow">dont_allow</option>
-</select>
-</span>
-</div>
+      <label for="aspect">Aspect</label>
+      <select id="aspect">
+        <option value="16:9">16:9</option>
+        <option value="9:16">9:16</option>
+      </select>
 
-<label for="prompt">Prompt</label>
-<textarea id="prompt" placeholder="Eg: A cinematic dolly shot across a rainy neon Tokyo alley"></textarea>
+      <label for="persons">Persons</label>
+      <select id="persons">
+        <option value="allow_all">allow_all</option>
+        <option value="allow_adult">allow_adult</option>
+        <option value="dont_allow">dont_allow</option>
+      </select>
 
-<label for="neg">Negative prompt (optional)</label>
-<input id="neg" type="text" placeholder="Eg: blurry, low quality, cartoon" />
+      <label for="prompt">Prompt</label>
+      <textarea id="prompt"></textarea>
 
-<div class="row">
-<div>
-<label for="key">Gemini API key</label>
-<input id="key" type="password" placeholder="Paste your key from AI Studio or Vertex AI" />
-<label class="muted"><input type="checkbox" id="remember"/> Remember key in browser</label>
-</div>
-<div>
-<label>&nbsp;</label>
-<button id="go" class="btn">▶ Generate 8s video</button>
-</div>
-</div>
+      <label for="neg">Negative prompt</label>
+      <input id="neg" type="text" />
 
-<div class="muted" style="margin-top:8px">Tip: Veo 3 generates 8‑second, 720p video with audio.</div>
-<h3>Activity</h3>
-<div id="log" class="log" aria-live="polite"></div>
-</section>
+      <label for="key">Gemini API Key</label>
+      <input id="key" type="password" placeholder="Paste your Gemini API Key" />
 
-<section class="card">
-<h3>Result</h3>
-<video id="player" controls playsinline></video>
-<div style="margin-top:10px; display:flex; gap:10px; align-items:center">
-<a id="download" class="btn" href="#" download="veo-output.mp4" style="display:none">⬇ Download MP4</a>
-<span id="meta" class="muted"></span>
-</div>
-</section>
-</main>
+      <button id="go" class="btn">▶ Generate Video</button>
 
-<script>
-const els = id => document.getElementById(id);
-const log = m => { const l = els('log'); l.textContent += (m + "\n"); l.scrollTop = l.scrollHeight; };
+      <h3>Activity</h3>
+      <div id="log" class="log"></div>
+    </section>
 
-// Restore key if remembered
-(()=>{ const k = localStorage.getItem('gemini_api_key'); if(k){ els('key').value=k; els('remember').checked=true; }})();
+    <section class="card">
+      <h3>Result</h3>
+      <video id="player" controls playsinline></video>
+      <a id="download" class="btn" href="#" download="veo-output.mp4" style="display:none">⬇ Download</a>
+    </section>
+  </main>
 
-els('remember').addEventListener('change', e => {
-  const val = els('key').value.trim();
-  if(e.target.checked && val) localStorage.setItem('gemini_api_key', val);
-  if(!e.target.checked) localStorage.removeItem('gemini_api_key');
-});
-els('key').addEventListener('input', ()=>{ if(els('remember').checked) localStorage.setItem('gemini_api_key', els('key').value.trim()); });
+  <script>
+    const log = (m)=>{ const l=document.getElementById('log'); l.textContent += (m+"\n"); l.scrollTop=l.scrollHeight; };
 
-els('go').addEventListener('click', async () => {
-  const apiKey = els('key').value.trim();
-  const prompt = els('prompt').value.trim();
-  const negativePrompt = els('neg').value.trim();
-  const aspectRatio = els('aspect').value;
-  const personGeneration = els('persons').value;
-  const model = els('model').value;
+    document.getElementById('go').addEventListener('click', async ()=>{
+      const apiKey = document.getElementById('key').value.trim();
+      const prompt = document.getElementById('prompt').value.trim();
+      const negativePrompt = document.getElementById('neg').value.trim();
+      const aspectRatio = document.getElementById('aspect').value;
+      const personGeneration = document.getElementById('persons').value;
+      const model = document.getElementById('model').value;
 
-  if(!apiKey){ alert('Paste your API key'); return; }
-  if(!prompt){ alert('Enter a prompt'); return; }
+      if(!apiKey || !prompt){ alert("Please enter API key and prompt"); return; }
 
-  els('go').disabled=true; els('download').style.display='none'; els('player').removeAttribute('src'); els('player').load();
-  els('meta').textContent='';
-  log('Submitting job via proxy…');
+      log("Submitting job via proxy…");
 
-  try {
-    // 1) Submit job to Vercel proxy
-    const startResp = await fetch('/api/proxy', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ apiKey, model, prompt, negativePrompt, aspectRatio, personGeneration })
+      try {
+        const res = await fetch("/api/proxy", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            apiKey,
+            model,
+            prompt,
+            negativePrompt,
+            aspectRatio,
+            personGeneration
+          })
+        });
+
+        if(!res.ok) throw new Error("Proxy failed " + res.status);
+        const data = await res.json();
+
+        if(data.videoUrl){
+          const player=document.getElementById('player');
+          player.src=data.videoUrl; player.load(); player.play();
+          const dl=document.getElementById('download');
+          dl.href=data.videoUrl; dl.style.display="inline-block";
+          log("✅ Done. Video ready.");
+        } else {
+          log("❌ No video URL returned");
+        }
+
+      } catch(err){
+        log("❌ " + err.message);
+      }
     });
-    if(!startResp.ok){ throw new Error('Proxy start failed'); }
-    const op = await startResp.json();
-    log('Job started. Operation: ' + op.name);
-
-    // 2) Poll via Google API (browser key)
-    let done=false, status;
-    const startedAt = Date.now();
-    while(!done){
-      await new Promise(r=>setTimeout(r,5000));
-      const poll = await fetch(`https://generativelanguage.googleapis.com/v1beta/${op.name}`, {
-        headers:{'x-goog-api-key': apiKey}
-      });
-      status = await poll.json();
-      done = !!status.done;
-      if(status.error) throw new Error(`API error ${status.error.code}: ${status.error.message}`);
-      log(`⏳ Waiting… ${Math.round((Date.now()-startedAt)/1000)}s`);
-    }
-
-    // 3) Get video
-    const uri = status.response?.generateVideoResponse?.generatedSamples?.[0]?.video?.uri ||
-                status.response?.generatedVideos?.[0]?.video?.uri;
-    if(!uri) throw new Error('Video URI not found');
-    const vidResp = await fetch(uri, { headers:{'x-goog-api-key': apiKey} });
-    const blob = await vidResp.blob();
-    const url = URL.createObjectURL(blob);
-
-    els('player').src = url; els('player').load(); els('player').play().catch(()=>{});
-    const dl = els('download'); dl.href=url; dl.style.display='inline-flex';
-    els('meta').textContent = `${(blob.size/1024/1024).toFixed(2)} MB`;
-    log('🎉 Ready to download MP4');
-
-  } catch(err){
-    console.error(err);
-    log('❌ '+(err?.message||err));
-  } finally {
-    els('go').disabled=false;
-  }
-});
-</script>
+  </script>
 </body>
 </html>
